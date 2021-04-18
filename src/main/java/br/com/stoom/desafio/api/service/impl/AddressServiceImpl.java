@@ -4,7 +4,6 @@ import br.com.stoom.desafio.api.model.Address;
 import br.com.stoom.desafio.api.repository.AddressRepository;
 import br.com.stoom.desafio.api.service.AddressService;
 import br.com.stoom.desafio.api.service.GeocodeService;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -17,7 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class AddressServiceImpl implements AddressService {
 
     private static Logger logger = LoggerFactory.getLogger(AddressServiceImpl.class);
@@ -26,10 +24,15 @@ public class AddressServiceImpl implements AddressService {
 
     private final GeocodeService geocodeService;
 
+    public AddressServiceImpl(AddressRepository addressRepository, GeocodeService geocodeService) {
+        this.addressRepository = addressRepository;
+        this.geocodeService = geocodeService;
+    }
+
     @Override
     public Address save(Address address) {
 
-        if (Objects.isNull(address.getLatitude()) && Objects.isNull(address.getLongitude())) {
+        if (Objects.isNull(address.getLatitude()) || Objects.isNull(address.getLongitude())) {
             address = geocodeService.getGeoConding(address);
         }
 
@@ -42,8 +45,9 @@ public class AddressServiceImpl implements AddressService {
     public Address update(Long id, Address address) {
         Address addressUpdate = getById(id);
 
-        if (Objects.isNull(address.getLatitude())) address.setLatitude(addressUpdate.getLatitude());
-        if (Objects.isNull(address.getLongitude())) address.setLongitude(addressUpdate.getLongitude());
+        if (Objects.isNull(address.getLatitude()) || Objects.isNull(address.getLongitude())) {
+            address = geocodeService.getGeoConding(address);
+        }
 
         BeanUtils.copyProperties(address, addressUpdate, "id");
 

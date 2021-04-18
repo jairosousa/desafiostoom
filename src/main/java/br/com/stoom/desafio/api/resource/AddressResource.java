@@ -1,4 +1,4 @@
-package br.com.stoom.desafio.resource;
+package br.com.stoom.desafio.api.resource;
 
 import br.com.stoom.desafio.api.model.Address;
 import br.com.stoom.desafio.api.service.AddressService;
