@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.text.Normalizer;
 import java.util.Optional;
 
 
@@ -27,6 +28,8 @@ public class GeocodeService {
         RestTemplate restTemplate = new RestTemplate();
 
         String paramsAddress = getParamsAddress(address);
+
+        log.info("STREET: {}", paramsAddress);
 
         UriComponentsBuilder builder = UriComponentsBuilder.fromUriString(GEOCODING_URI).queryParam("address", paramsAddress)
                 .queryParam("key", apiKey);
@@ -48,9 +51,14 @@ public class GeocodeService {
 
     private String getParamsAddress(Address address) {
 
-        String streetName = address.getStreetName().replace(" ", "+");
-        String city = address.getCity().replace(" ", "+");
-        String state = address.getState().replace(" ", "+");
-        return streetName + "," + address.getNumber() + "," + city + "," + state;
+        String streetName = removerAcentos(address.getStreetName().replace(" ", "+"));
+        String city = removerAcentos(address.getCity().replace(" ", "+"));
+        String state = removerAcentos(address.getState().replace(" ", "+"));
+        String neighbourhood = removerAcentos(address.getNeighbourhood().replace(" ", "+"));
+        return streetName + "," + address.getNumber() + "," + neighbourhood + "," + city + "," + state;
+    }
+
+    private String removerAcentos(String str) {
+        return Normalizer.normalize(str, Normalizer.Form.NFD).replaceAll("[^\\p{ASCII}]", "");
     }
 }
