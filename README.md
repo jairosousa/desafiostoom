@@ -33,3 +33,14 @@ docker build -t desafio:v1 .
 docker run -p 8080:8080 --name desafio desafio:v1
 ```
 
+* Docker-Compose
+Na pasta docker esta o arquivo docker-compose.yml
+
+Criar a imagem
+```
+docker-compose build
+```
+Start container
+```
+docker-compose up -d
+```
